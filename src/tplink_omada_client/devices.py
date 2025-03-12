@@ -474,6 +474,28 @@ class OmadaSwitchPortDetails(OmadaSwitchPort):
         """Type of bandwidth control applied."""
         return BandwidthControl(self._data["bandWidthCtrlType"])
 
+    @property
+    def has_schedule(self) -> bool:
+        """True if the port has a schedule configured."""
+        return "schedule" in self._data and self._data["schedule"].get("enabled", False)
+
+    @property
+    def schedule_enabled(self) -> bool:
+        """True if the port schedule is enabled."""
+        if not self.has_schedule:
+            return False
+        return self._data["schedule"]["enabled"]
+
+    @property
+    def schedule_active(self) -> bool:
+        """True if the port schedule is currently active and affecting the port."""
+        if not self.schedule_enabled:
+            return False
+        # Check if current time falls within any of the schedule's time ranges
+        # This would require implementing time-based logic
+        # For now, we'll just check if the port is disabled by schedule
+        return self.is_disabled and self._data["schedule"].get("isActive", False)
+
     # "bandCtrl": {
     #     "egressEnable": false,
     #     "egressLimit": 0,

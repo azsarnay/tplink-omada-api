@@ -24,6 +24,7 @@ from . import (
     command_set_client_name,
     command_set_device_led,
     command_switch,
+    command_switch_port,
     command_switch_ports,
     command_switches,
     command_target,
@@ -61,6 +62,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     command_set_client_name.arg_parser(subparsers)
     command_set_device_led.arg_parser(subparsers)
     command_switch.arg_parser(subparsers)
+    command_switch_port.arg_parser(subparsers)
     command_switch_ports.arg_parser(subparsers)
     command_switches.arg_parser(subparsers)
     command_target.arg_parser(subparsers)

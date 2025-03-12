@@ -382,7 +382,7 @@ class OmadaSiteClient:
         index_or_port: int | OmadaSwitchPort,
         new_name: str | None = None,
         profile_id: str | None = None,
-        overrides: SwitchPortOverrides | None = None,
+        overrides: dict | None = None,
     ) -> OmadaSwitchPortDetails:
         """Applies an existing profile to a switch on the port"""
 
@@ -404,17 +404,21 @@ class OmadaSiteClient:
             "profileOverrideEnable": overrides is not None,
         }
         if overrides:
-            payload["operation"] = "switching"
-            payload["bandWidthCtrlType"] = BandwidthControl.OFF
-            payload["poe"] = PoEMode.ENABLED if overrides.enable_poe else PoEMode.DISABLED
-            payload["dot1x"] = overrides.dot1x_mode
-            payload["duplex"] = overrides.duplex
-            payload["linkSpeed"] = overrides.link_speed
-            payload["lldpMedEnable"] = overrides.lldp_med_enable
-            payload["loopbackDetectEnable"] = overrides.loopback_detect
-            payload["spanningTreeEnable"] = overrides.spanning_tree_enable
-            payload["portIsolationEnable"] = overrides.port_isolation
-            payload["topoNotifyEnable"] = False
+            # Handle both SwitchPortOverrides object and dict
+            if isinstance(overrides, dict):
+                payload.update(overrides)
+            else:
+                payload["operation"] = "switching"
+                payload["bandWidthCtrlType"] = BandwidthControl.OFF
+                payload["poe"] = PoEMode.ENABLED if overrides.enable_poe else PoEMode.DISABLED
+                payload["dot1x"] = overrides.dot1x_mode
+                payload["duplex"] = overrides.duplex
+                payload["linkSpeed"] = overrides.link_speed
+                payload["lldpMedEnable"] = overrides.lldp_med_enable
+                payload["loopbackDetectEnable"] = overrides.loopback_detect
+                payload["spanningTreeEnable"] = overrides.spanning_tree_enable
+                payload["portIsolationEnable"] = overrides.port_isolation
+                payload["topoNotifyEnable"] = False
 
         await self._api.request(
             "patch",
